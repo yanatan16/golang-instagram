@@ -10,6 +10,8 @@ func TestIterate_GetUserFollowedBy(t *testing.T) {
 	checkRes(t, res.Meta, err)
 
 	doneChan := make(chan bool) // This is only needed if you want to close early
+	defer close(doneChan)
+
 	userChan, errChan := api.IterateUsers(res, doneChan)
 
 	i := 0
@@ -20,7 +22,7 @@ func TestIterate_GetUserFollowedBy(t *testing.T) {
 		i++
 		if i > 19 {
 			// breaking early
-			close(doneChan)
+			doneChan <- true
 			// userChan should close immediately afterward, exiting the loop, and not closing the channel again
 		}
 	}

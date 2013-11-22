@@ -103,6 +103,7 @@ if err != nil {
 
 // If you plan to break early, create a done channel. Pass in nil if you plan to exhaust the pagination
 done := make(chan bool)
+defer close(done)
 
 // Here we get back two channels. Don't worry about the error channel for now
 medias, errs := api.IterateMedia(res, done)
@@ -112,7 +113,7 @@ for media := range medias {
 
   if doneWithMedia(media) {
     // This is how we signal to the iterator to quit early
-    close(done)
+    done <- true
   }
 }
 
