@@ -90,6 +90,12 @@ func DoSomeInstagramApiStuff(accessToken string) {
 
 There's many more endpoints and a fancy iteration wrapper. Check it out in the code and documentation!
 
+## Tests
+
+To run the tests, you'll need at least a `ClientId` (which you can get from [here](http://instagram.com/developer/clients/manage/)), and preferably an authenticated users' `AccessToken`, which you can get from making a request on the [API Console](http://instagram.com/developer/api-console/)
+
+First, fill in `config_test.go.example` and save it as `config_test.go`. Then run `go test`
+
 ## Notes
 
 - Certain methods require an access token so check the official documentation before using an unauthenticated `Api`. Also, there is a 5000 request per hour rate limit on any one ClientId or AccessToken, so it is advisable to use AccessTokens when available. This package will use it if it is given over a ClientId.
