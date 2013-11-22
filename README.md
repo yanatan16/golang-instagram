@@ -71,7 +71,7 @@ func DoSomeInstagramApiStuff(accessToken string) {
     // A response has two fields: Meta which you shouldn't really care about
     // And whatever your getting, in this case, a User
     me := resp.User
-    fmt.Printf("My userid is %s and I have %d followers\n", me.Id, me.Counts.Followers)
+    fmt.Printf("My userid is %s and I have %d followers\n", me.Id, me.Counts.FollowedBy)
   }
 
   params := url.Values{}
