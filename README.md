@@ -90,6 +90,38 @@ func DoSomeInstagramApiStuff(accessToken string) {
 
 There's many more endpoints and a fancy iteration wrapper. Check it out in the code and documentation!
 
+## Iteration
+
+So pagination makes iterating through a list of users or media possible, but its not easy. So, because Go has nice iteration facilities (i.e. `range`), this package includes two useful methods for iterating over paginating: `api.IterateMedias` and `api.IterateUsers`. You can see [the tests](https://github.com/yanatan16/golang-instagram/blob/master/instagram/iterate_test.go) and [the docs](http://godoc.org/github.com/yanatan16/golang-instagram/instagram/#Api.IterateMedia) for more info.
+
+```go
+// First go and make the original request, passing in any additional parameters you need
+res, err := api.GetUserRecentMedia("some-user", params)
+if err != nil {
+  panic(err)
+}
+
+// If you plan to break early, create a done channel. Pass in nil if you plan to exhaust the pagination
+done := make(chan bool)
+
+// Here we get back two channels. Don't worry about the error channel for now
+medias, errs := api.IterateMedia(res, done)
+
+for media := range medias {
+  processMedia(media)
+
+  if doneWithMedia(media) {
+    // This is how we signal to the iterator to quit early
+    close(done)
+  }
+}
+
+// If we exited early due to an error, we can check here
+if err, ok := <- errs; ok && err != nil {
+  panic(err)
+}
+```
+
 ## Tests
 
 To run the tests, you'll need at least a `ClientId` (which you can get from [here](http://instagram.com/developer/clients/manage/)), and preferably an authenticated users' `AccessToken`, which you can get from making a request on the [API Console](http://instagram.com/developer/api-console/)
@@ -107,6 +139,8 @@ stringIdVersion := instagram.ParseLocationId(loc.Id)
 ```
 
 If anyone can prove to me that they fixed this bug, just let me know and we can change it to a string (all other IDs are strings...)
+
+- I apologize for using Medias [sic] everywhere, I needed a plural version that isn't spelled the same.
 
 ## License
 

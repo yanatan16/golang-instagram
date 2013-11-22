@@ -12,17 +12,23 @@ func TestIterate_GetUserFollowedBy(t *testing.T) {
 	doneChan := make(chan bool) // This is only needed if you want to close early
 	userChan, errChan := api.IterateUsers(res, doneChan)
 
-	for i := 0; i < 20; i++ {
-		if user, ok := <-userChan; !ok {
-			t.Error("User channel closed early!", i)
-			break
-		} else if user.Id == "" {
+	i := 0
+	for user := range userChan {
+		if user.Id == "" {
 			t.Error("user has empty id", user)
+		}
+		i++
+		if i > 19 {
+			// breaking early
+			close(doneChan)
+			// userChan should close immediately afterward, exiting the loop, and not closing the channel again
 		}
 	}
 
-	// breaking early
-	close(doneChan)
+	// should be closed
+	if u, ok := <- userChan; ok {
+		t.Error("User Channel shouldn't have any more data on it. It should close!", u)
+	}
 
 	if err := <-errChan; err != nil {
 		t.Error(err)
