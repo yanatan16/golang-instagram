@@ -105,7 +105,7 @@ if err != nil {
 done := make(chan bool)
 
 // Here we get back two channels. Don't worry about the error channel for now
-medias, errs := api.IterateMedia(res.Pagination, done)
+medias, errs := api.IterateMedia(res, done)
 
 for media := range medias {
   processMedia(media)
