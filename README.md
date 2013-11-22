@@ -140,6 +140,7 @@ stringIdVersion := instagram.ParseLocationId(loc.Id)
 
 If anyone can prove to me that they fixed this bug, just let me know and we can change it to a string (all other IDs are strings...)
 
+- `created_time` fields come back as strings. So theres a handy type `StringUnixTimeStringUnixTime` which has a nice method `func (sut StringUnixTime) Time() (time.Time, error)` that you can use to cast it to a golang time.
 - I apologize for using Medias [sic] everywhere, I needed a plural version that isn't spelled the same.
 
 ## License
