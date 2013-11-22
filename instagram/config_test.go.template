@@ -1,0 +1,13 @@
+package instagram
+
+// Copy this to config_test.go (its ignored by git)
+// And fill in your test clientID, clientSecret, authorization token and secret
+// You can get the client information from http://instagram.com/developer/clients/manage/
+// And you'll have to authorize with that client to get a token
+// You don't NEED access tokens per se but some requests require it.
+
+var TestConfig map[string]string = map[string]string{
+  "client_id": "",
+  "access_token": "",
+  "my_id": "", // The authenticated user's ID
+}
