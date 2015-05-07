@@ -103,7 +103,12 @@ func apiError(resp *http.Response) error {
 		return err
 	}
 
-	err := MetaError(*m.Meta)
+	var err MetaError
+	if m.Meta != nil {
+		err = MetaError(*m.Meta)
+	} else {
+		err = MetaError(Meta{Code: resp.StatusCode, ErrorMessage: resp.Status})
+	}
 	return &err
 }
 
