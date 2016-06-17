@@ -17,6 +17,7 @@ var (
 type Api struct {
 	ClientId    string
 	AccessToken string
+	Header      http.Header
 }
 
 // Create an API with either a ClientId OR an accessToken. Only one is required. Access tokens are preferred because they keep rate limiting down.
@@ -77,6 +78,8 @@ func (api *Api) do(req *http.Request, r interface{}) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	api.Header = resp.Header
 
 	if resp.StatusCode != 200 {
 		return apiError(resp)
