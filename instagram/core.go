@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	// "io/ioutil"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -77,7 +77,10 @@ func (api *Api) do(req *http.Request, r interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		io.CopyN(ioutil.Discard, resp.Body, 512)
+		resp.Body.Close()
+	}()
 
 	api.Header = resp.Header
 
