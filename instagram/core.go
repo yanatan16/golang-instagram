@@ -19,29 +19,29 @@ var (
 )
 
 type Api struct {
-	ClientId           string
-	ClientSecret       string
-	AccessToken        string
-	ForceSignedRequest bool
-	Header             http.Header
+	ClientId             string
+	ClientSecret         string
+	AccessToken          string
+	EnforceSignedRequest bool
+	Header               http.Header
 }
 
 // Create an API with either a ClientId OR an accessToken. Only one is required. Access tokens are preferred because they keep rate limiting down.
-// If forceSignedRequest is set to true, then clientSecret is required
-func New(clientId string, clientSecret string, accessToken string, forceSignedRequest bool) *Api {
+// If enforceSignedRequest is set to true, then clientSecret is required
+func New(clientId string, clientSecret string, accessToken string, enforceSignedRequest bool) *Api {
 	if clientId == "" && accessToken == "" {
 		panic("ClientId or AccessToken must be given to create an Api")
 	}
 
-	if forceSignedRequest == true && clientSecret == "" {
+	if enforceSignedRequest && clientSecret == "" {
 		panic("ClientSecret is required for signed request")
 	}
 
 	return &Api{
-		ClientId:           clientId,
-		ClientSecret:       clientSecret,
-		AccessToken:        accessToken,
-		ForceSignedRequest: forceSignedRequest,
+		ClientId:             clientId,
+		ClientSecret:         clientSecret,
+		AccessToken:          accessToken,
+		EnforceSignedRequest: enforceSignedRequest,
 	}
 }
 
@@ -99,7 +99,7 @@ func (api *Api) extendParams(p url.Values) url.Values {
 func (api *Api) get(path string, params url.Values, r interface{}) error {
 	params = api.extendParams(params)
 	// Sign request if ForceSignedRequest is set to true
-	if api.ForceSignedRequest {
+	if api.EnforceSignedRequest {
 		params = signParams(path, params, api.ClientSecret)
 	}
 

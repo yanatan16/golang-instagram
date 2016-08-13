@@ -26,7 +26,7 @@ func (api *Api) next(p *Pagination, res interface{}) error {
 	}
 
 	// Sign params if using the secure api
-	if api.ForceSignedRequest {
+	if api.EnforceSignedRequest {
 		uriParams = signParams(path, uriParams, api.ClientSecret)
 	}
 
