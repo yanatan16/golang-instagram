@@ -2,12 +2,16 @@
 package instagram
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sort"
 )
 
 var (
@@ -15,24 +19,53 @@ var (
 )
 
 type Api struct {
-	ClientId    string
-	AccessToken string
-	Header      http.Header
+	ClientId           string
+	ClientSecret       string
+	AccessToken        string
+	ForceSignedRequest bool
+	Header             http.Header
 }
 
 // Create an API with either a ClientId OR an accessToken. Only one is required. Access tokens are preferred because they keep rate limiting down.
-func New(clientId string, accessToken string) *Api {
+// If forceSignedRequest is set to true, then clientSecret is required
+func New(clientId string, clientSecret string, accessToken string, forceSignedRequest bool) *Api {
 	if clientId == "" && accessToken == "" {
 		panic("ClientId or AccessToken must be given to create an Api")
 	}
 
+	if forceSignedRequest == true && clientSecret == "" {
+		panic("ClientSecret is required for signed request")
+	}
+
 	return &Api{
-		ClientId:    clientId,
-		AccessToken: accessToken,
+		ClientId:           clientId,
+		ClientSecret:       clientSecret,
+		AccessToken:        accessToken,
+		ForceSignedRequest: forceSignedRequest,
 	}
 }
 
 // -- Implementation of request --
+func signParams(path string, params url.Values, clientSecret string) url.Values {
+	message := path
+	keys := []string{}
+
+	for k := range params {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, v := range keys {
+		message += "|" + v + "=" + params.Get(v)
+	}
+
+	hash := hmac.New(sha256.New, []byte(clientSecret))
+	hash.Write([]byte(message))
+
+	params.Set("sig", hex.EncodeToString(hash.Sum(nil)))
+	return params
+}
 
 func buildGetRequest(urlStr string, params url.Values) (*http.Request, error) {
 	u, err := url.Parse(urlStr)
@@ -65,6 +98,11 @@ func (api *Api) extendParams(p url.Values) url.Values {
 
 func (api *Api) get(path string, params url.Values, r interface{}) error {
 	params = api.extendParams(params)
+	// Sign request if ForceSignedRequest is set to true
+	if api.ForceSignedRequest {
+		params = signParams(path, params, api.ClientSecret)
+	}
+
 	req, err := buildGetRequest(urlify(path), params)
 	if err != nil {
 		return err
