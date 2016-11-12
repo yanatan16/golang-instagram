@@ -6,7 +6,7 @@ import (
 )
 
 func TestIterate_GetUserFollowedBy(t *testing.T) {
-	res, err := api.GetUserFollowedBy(ladygaga_id, values("count", "5"))
+	res, err := api.GetUserFollowedBy(values("count", "5"))
 	checkRes(t, res.Meta, err)
 
 	doneChan := make(chan bool) // This is only needed if you want to close early
@@ -28,7 +28,7 @@ func TestIterate_GetUserFollowedBy(t *testing.T) {
 	}
 
 	// should be closed
-	if u, ok := <- userChan; ok {
+	if u, ok := <-userChan; ok {
 		t.Error("User Channel shouldn't have any more data on it. It should close!", u)
 	}
 

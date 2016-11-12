@@ -5,21 +5,24 @@ import (
 	"net/url"
 )
 
+// for relationships, has been modified the scope in IG new Endpoint API
+// reference: https://www.instagram.com/developer/endpoints/relationships/
+
 // Get the list of users this user follows.
 // Required Scope: relationships
-// Gets /users/{user-id}/follows
-func (api *Api) GetUserFollows(userId string, params url.Values) (res *PaginatedUsersResponse, err error) {
+// Gets /users/self/follows
+func (api *Api) GetUserFollows(params url.Values) (res *PaginatedUsersResponse, err error) {
 	res = new(PaginatedUsersResponse)
-	err = api.get(fmt.Sprintf("/users/%s/follows", userId), params, res)
+	err = api.get(fmt.Sprintf("/users/self/follows"), params, res)
 	return
 }
 
 // Get the list of users this user follows.
 // Required Scope: relationships
-// Gets /users/{user-id}/followed-by
-func (api *Api) GetUserFollowedBy(userId string, params url.Values) (res *PaginatedUsersResponse, err error) {
+// Gets /users/self/followed-by
+func (api *Api) GetUserFollowedBy(params url.Values) (res *PaginatedUsersResponse, err error) {
 	res = new(PaginatedUsersResponse)
-	err = api.get(fmt.Sprintf("/users/%s/followed-by", userId), params, res)
+	err = api.get(fmt.Sprintf("/users/self/followed-by"), params, res)
 	return
 }
 
