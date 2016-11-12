@@ -19,13 +19,15 @@ func (api *Api) GetSelf() (res *UserResponse, err error) {
 	return api.GetUser("self", nil)
 }
 
+// Endpoint is not available in the new IG Api
+// reference: https://www.instagram.com/developer/endpoints
 // See the authenticated user's feed. May return a mix of both image and video types.
 // Gets /users/self/feed
-func (api *Api) GetUserFeed(params url.Values) (res *PaginatedMediasResponse, err error) {
-	res = new(PaginatedMediasResponse)
-	err = api.get("/users/self/feed", params, res)
-	return
-}
+// func (api *Api) GetUserFeed(params url.Values) (res *PaginatedMediasResponse, err error) {
+// 	res = new(PaginatedMediasResponse)
+// 	err = api.get("/users/self/feed", params, res)
+// 	return
+// }
 
 // Get the most recent media published by a user. May return a mix of both image and video types.
 // Gets /users/{user-id}/media/recent

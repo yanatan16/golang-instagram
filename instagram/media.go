@@ -22,10 +22,12 @@ func (api *Api) GetMediaSearch(params url.Values) (res *MediasResponse, err erro
 	return
 }
 
+// No available endpoints in the new IG Api
+// reference: https://www.instagram.com/developer/endpoints/media/
 // Get a list of what media is most popular at the moment. Can return mix of image and video types.
 // Gets /media/popular
-func (api *Api) GetMediaPopular(params url.Values) (res *MediasResponse, err error) {
-	res = new(MediasResponse)
-	err = api.get("/media/popular", params, res)
-	return
-}
+// func (api *Api) GetMediaPopular(params url.Values) (res *MediasResponse, err error) {
+// 	res = new(MediasResponse)
+// 	err = api.get("/media/popular", params, res)
+// 	return
+// }
