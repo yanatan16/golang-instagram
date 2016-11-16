@@ -3,8 +3,10 @@ package instagram
 // Instagram User Object. Note that user objects are not always fully returned.
 // Be sure to see the descriptions on the instagram documentation for any given endpoint.
 type User struct {
-	Id             string
-	Username       string
+	Id             string `json:"id"`
+	Username       string `json:"username"`
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
 	FullName       string `json:"full_name"`
 	ProfilePicture string `json:"profile_picture"`
 	Bio            string

@@ -41,7 +41,12 @@ authenticatedApi := &instagram.Api{
   AccessToken: "my-access-token",
 }
 
-anotherAuthenticatedApi := instagram.New("", "my-access-token")
+- if enforceSigned false
+anotherAuthenticatedApi := instagram.New("", "", "my-access-token", false)
+
+- if enforceSigned true
+anotherAuthenticatedApi := instagram.New("client_id", "client_secret", "my-access-token", false)
+
 ```
 
 ## Usage

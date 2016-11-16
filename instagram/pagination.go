@@ -2,6 +2,7 @@ package instagram
 
 import (
 	"net/url"
+	"strings"
 )
 
 // Get the next page of media
@@ -19,9 +20,14 @@ func (api *Api) NextUsers(up *UserPagination) (res *PaginatedUsersResponse, err 
 }
 
 func (api *Api) next(p *Pagination, res interface{}) error {
-	done, uri, uriParams, err := p.NextPage()
+	done, uri, path, uriParams, err := p.NextPage()
 	if err != nil || done == true {
 		return err
+	}
+
+	// Sign params if using the secure api
+	if api.EnforceSignedRequest {
+		uriParams = signParams(path, uriParams, api.ClientSecret)
 	}
 
 	req, err := buildGetRequest(uri, uriParams)
@@ -29,12 +35,11 @@ func (api *Api) next(p *Pagination, res interface{}) error {
 		return err
 	}
 
-	err = api.do(req, res)
-	return nil
+	return api.do(req, res)
 }
 
 // Return the next page uri and parameters
-func (p *Pagination) NextPage() (done bool, uri string, params url.Values, err error) {
+func (p *Pagination) NextPage() (done bool, uri string, path string, params url.Values, err error) {
 	if p == nil || p.NextUrl == "" {
 		// We're done. Theres no more pages
 		done = true
@@ -47,9 +52,12 @@ func (p *Pagination) NextPage() (done bool, uri string, params url.Values, err e
 	}
 
 	params = urlStruct.Query()
+	// Remove `sig` key that was set by the initial request
+	params.Del("sig")
 	urlStruct.RawQuery = ""
 
 	done = false
+	path = strings.Replace(urlStruct.Path, "/v1", "", 1)
 	uri = urlStruct.String()
 	return
 }

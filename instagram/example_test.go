@@ -7,23 +7,17 @@ import (
 
 // ExampleNew sets up the whole instagram API
 func ExampleNew() {
-	apiWithoutAuthenticatedUser := New("client_key", "")
-	if _, err := apiWithoutAuthenticatedUser.GetMediaPopular(nil); err != nil {
-		panic(err)
-	}
-	fmt.Println("Successfully created instagram.Api without user credentials")
-
-	apiAuthenticatedUser := New("", "access_token")
+	apiAuthenticatedUser := New("client_key", "secret", "", true)
 	if ok, err := apiAuthenticatedUser.VerifyCredentials(); !ok {
 		panic(err)
-		return
 	}
 	fmt.Println("Successfully created instagram.Api with user credentials")
 }
 
 // ExampleApi_GetUser shows how to get a user object
 func ExampleApi_GetUser() {
-	api := New("client_id" /* or */, "access_token")
+	// *** or ***
+	api := New("client_id", "client_secret", "access_token", true)
 
 	userResponse, err := api.GetUser("user-id", nil)
 	if err != nil {
@@ -36,7 +30,8 @@ func ExampleApi_GetUser() {
 
 // ExampleApi_GetUserSearch_Params shows how to use parameters
 func ExampleApi_GetUserSearch_Params() {
-	api := New("" /* need */, "access_token")
+	// *** need ***
+	api := New("", "client_secret", "access_token", true)
 
 	params := url.Values{}
 	params.Set("count", "5") // Get 5 users
@@ -52,11 +47,17 @@ func ExampleApi_GetUserSearch_Params() {
 	}
 }
 
-// ExampleApi_GetMediaPopular shows how you can paginate through popular media
-func ExampleApi_GetMediaPopular() {
-	api := New("client_id" /* or */, "access_token")
+// ExampleApi_GetUserRecentMedia : Get the most recent media published by the owner
+func ExampleApi_GetUserRecentMedia() {
+	// *** or ***
+	api := New("client_id", "client_secret", "access_token", true)
 
-	mediasResponse, err := api.GetMediaPopular(nil)
+	params := url.Values{}
+	params.Set("count", "3") // 4 images in this set
+	params.Set("max_timestamp", "1466809870")
+	params.Set("min_timestamp", "1396751898")
+	mediasResponse, err := api.GetUserRecentMedia(ccistulli_id, params)
+
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +69,8 @@ func ExampleApi_GetMediaPopular() {
 
 // ExampleApi_IterateMedia shows how to use iteration on a channel to avoid the complex pagination calls
 func ExampleApi_IterateMedia() {
-	api := New("client_id" /* or */, "access_token")
+	// *** or ***
+	api := New("client_id", "client_secret", "access_token", true)
 
 	mediasResponse, err := api.GetUserRecentMedia("user-id", nil)
 	if err != nil {
