@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strings"
 )
 
 var (
@@ -104,6 +105,59 @@ func (api *Api) get(path string, params url.Values, r interface{}) error {
 	}
 
 	req, err := buildGetRequest(urlify(path), params)
+	if err != nil {
+		return err
+	}
+	return api.do(req, r)
+}
+func (api *Api) delete(path string, params url.Values, r interface{}) error {
+	params = api.extendParams(params)
+	// Sign request if ForceSignedRequest is set to true
+	if api.EnforceSignedRequest {
+		params = signParams(path, params, api.ClientSecret)
+	}
+	u, err := url.Parse(urlify(path))
+	if err != nil {
+		return err
+	}
+
+	// If we are getting, then we can't merge query params
+	if params != nil {
+		if u.RawQuery != "" {
+			return fmt.Errorf("Cannot merge query params in urlStr and params")
+		}
+		u.RawQuery = params.Encode()
+	}
+	req, err := http.NewRequest("DELETE", u.String(), strings.NewReader(params.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	if err != nil {
+		return err
+	}
+	return api.do(req, r)
+}
+
+func (api *Api) post(path string, params url.Values, r interface{}) error {
+	params = api.extendParams(params)
+	// Sign request if ForceSignedRequest is set to true
+	if api.EnforceSignedRequest {
+		params = signParams(path, params, api.ClientSecret)
+	}
+	u, err := url.Parse(urlify(path))
+	if err != nil {
+		return err
+	}
+
+	// If we are getting, then we can't merge query params
+	if params != nil {
+		if u.RawQuery != "" {
+			return fmt.Errorf("Cannot merge query params in urlStr and params")
+		}
+		u.RawQuery = params.Encode()
+	}
+	req, err := http.NewRequest("POST", u.String(), strings.NewReader(params.Encode()))
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
 	if err != nil {
 		return err
 	}
