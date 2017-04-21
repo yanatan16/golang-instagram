@@ -13,3 +13,17 @@ func (api *Api) GetMediaLikes(mediaId string, params url.Values) (res *UsersResp
 	err = api.get(fmt.Sprintf("/media/%s/likes", mediaId), params, res)
 	return
 }
+
+// PostMediaLike ...
+func (api *Api) PostMediaLike(mediaId string, params url.Values) (res *UsersResponse, err error) {
+	res = new(UsersResponse)
+	err = api.post(fmt.Sprintf("/media/%s/likes", mediaId), params, res)
+	return
+}
+
+// DeleteMediaLike ...
+func (api *Api) DeleteMediaLike(mediaId string, params url.Values) (res *UsersResponse, err error) {
+	res = new(UsersResponse)
+	err = api.delete(fmt.Sprintf("/media/%s/likes", mediaId), nil, res)
+	return
+}
