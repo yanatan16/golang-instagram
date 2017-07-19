@@ -1,6 +1,7 @@
 package instagram
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -18,18 +19,29 @@ func (s StringUnixTime) Time() (t time.Time, err error) {
 	return
 }
 
-// Sometimes location Id is a string and sometimes its an integer
-type LocationId interface{}
-
-func ParseLocationId(lid LocationId) string {
-	if lid == nil {
-		return ""
+// UnmarshalJSON is implemented on Location because the ID can be
+// returned as a string or an int, and we would like to always have
+// it as a string on the Location struct.
+func (l *Location) UnmarshalJSON(b []byte) error {
+	temp := &struct {
+		ID        interface{}
+		Name      string
+		Latitude  float64
+		Longitude float64
+	}{}
+	if err := json.Unmarshal(b, temp); err != nil {
+		return err
 	}
-	if slid, ok := lid.(string); ok {
-		return slid
+	switch id := temp.ID.(type) {
+	case int:
+		l.Id = strconv.Itoa(id)
+	case string:
+		l.Id = id
+	default:
+		return fmt.Errorf("unknown type received for location id: %T", id)
 	}
-	if ilid, ok := lid.(int64); ok {
-		return fmt.Sprintf("%d", ilid)
-	}
-	return ""
+	l.Latitude = temp.Latitude
+	l.Longitude = temp.Longitude
+	l.Name = temp.Name
+	return nil
 }

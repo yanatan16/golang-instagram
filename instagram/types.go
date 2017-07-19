@@ -98,7 +98,7 @@ type Videos struct {
 type Video Image
 
 type Location struct {
-	Id        LocationId
+	Id        string
 	Name      string
 	Latitude  float64
 	Longitude float64
