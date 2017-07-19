@@ -9,7 +9,7 @@ Implemented:
 - All GET requests are implemented
 - Both authenticated and unauthenticated requests can be made
 - A nice iterator facility for paginated requests
-- No `interface{}` data types! (1 exception, see Location.Id note below)
+- No `interface{}` data types!
 
 Todo:
 
@@ -137,14 +137,6 @@ First, fill in `config_test.go.example` and save it as `config_test.go`. Then ru
 ## Notes
 
 - Certain methods require an access token so check the official documentation before using an unauthenticated `Api`. Also, there is a 5000 request per hour rate limit on any one ClientId or AccessToken, so it is advisable to use AccessTokens when available. This package will use it if it is given over a ClientId.
-- Location.Id is sometimes returned as an integer (in media i think) and sometimes a string. Because of this, we have to call it an `interface{}`. But there is a facility to force it to a string, as follows:
-
-```go
-var loc Location
-stringIdVersion := instagram.ParseLocationId(loc.Id)
-```
-
-If anyone can prove to me that they fixed this bug, just let me know and we can change it to a string (all other IDs are strings...)
 
 - `created_time` fields come back as strings. So theres a handy type `StringUnixTimeStringUnixTime` which has a nice method `func (sut StringUnixTime) Time() (time.Time, error)` that you can use to cast it to a golang time.
 - I apologize for using Medias [sic] everywhere, I needed a plural version that isn't spelled the same.
