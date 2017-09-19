@@ -17,7 +17,7 @@ func (api *Api) GetUserFollows(params url.Values) (res *PaginatedUsersResponse, 
 	return
 }
 
-// Get the list of users this user follows.
+// Get the list of users following this user.
 // Required Scope: relationships
 // Gets /users/self/followed-by
 func (api *Api) GetUserFollowedBy(params url.Values) (res *PaginatedUsersResponse, err error) {
